@@ -134,6 +134,7 @@ public class ExpandedMiningPlanet extends Artifact {
             defineObsProperty("pos", -1, -1);
             defineObsProperty("tick", 0);
             defineObsProperty("cargo", 0, model.goldCapacity(agId));
+            defineObsProperty("cargo_space");
             defineObsProperty("vision_radius", model.viewRadius(agId));
             defineObsProperty("inventory_slots", 0, Config.BASE_EQUIPMENT_SLOTS);
             updateAgPercept();
@@ -194,6 +195,11 @@ public class ExpandedMiningPlanet extends Artifact {
         resetProperty("carrying_gold");
         if (model.isCarryingGold(agId)) {
             defineObsProperty("carrying_gold");
+        }
+
+        resetProperty("cargo_space");
+        if (model.carryingGold(agId) < model.goldCapacity(agId)) {
+            defineObsProperty("cargo_space");
         }
 
         resetTemplate("equipped", (Object) null);

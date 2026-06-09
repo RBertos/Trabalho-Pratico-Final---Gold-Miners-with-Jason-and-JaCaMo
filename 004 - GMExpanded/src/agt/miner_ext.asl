@@ -60,16 +60,35 @@ score(0).
 
 /* Gold discovery and distributed allocation */
 
-@local_pickup[atomic]
+@pick_gold_here[atomic]
 +cell(X,Y,gold)
-  : pos(X,Y) & free & not engaged
- <- +known_gold(X,Y);
-    +claiming(X,Y);
-    +claimed(X,Y);
+  : pos(X,Y) & cargo_space
+ <- .print("Gold under me at (",X,",",Y,") - picking now.");
+    !pick_here(X,Y).
+
+@prefer_near_gold[atomic]
++cell(X,Y,gold)
+  : cargo_space & not carrying_gold & not free &
+    .desire(handle(gold(OldX,OldY))) &
+    pos(AgX,AgY) &
+    jia_ext.dist(X,Y,AgX,AgY,DNew) &
+    jia_ext.dist(OldX,OldY,AgX,AgY,DOld) &
+    DNew < DOld
+ <- .drop_desire(handle(gold(OldX,OldY)));
+    comm_tick("mission_cancelled");
+    .broadcast(tell,mission_cancelled(OldX,OldY,better_gold_found));
+    -known_gold(OldX,OldY);
+    -claiming(OldX,OldY);
+    -claimed(OldX,OldY);
+    -sent_bid(OldX,OldY);
+    .abolish(bid_for(OldX,OldY,_,_));
     +engaged;
     -free;
+    +claiming(X,Y);
+    +claimed(X,Y);
+    +known_gold(X,Y);
     mission("gold");
-    .print("Gold under me at (",X,",",Y,") - picking now.");
+    .print("Switching to nearer gold at (",X,",",Y,").");
     !handle(gold(X,Y)).
 
 @discover_gold[atomic]
@@ -190,6 +209,17 @@ score(0).
     .abolish(bid_for(X,Y,_,_)).
 
 /* Handling gold */
+
++!pick_here(X,Y)
+  : cargo_space
+ <- -free;
+    +engaged;
+    +claiming(X,Y);
+    +known_gold(X,Y);
+    +claimed(X,Y);
+    mission("gold");
+    pick;
+    !after_pick(X,Y).
 
 +!handle(gold(X,Y))
   : true
