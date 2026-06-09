@@ -194,6 +194,9 @@ public class ExpandedWorldModel extends GridWorldModel {
         if (!inGrid(x, y) || hasObject(OBSTACLE, x, y)) {
             return false;
         }
+        if (depot != null && depot.x == x && depot.y == y) {
+            return true;
+        }
         for (int i = 0; i < agents.length; i++) {
             if (i == ag) {
                 continue;

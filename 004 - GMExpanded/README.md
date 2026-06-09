@@ -46,7 +46,11 @@ O ouro e tratado como carga separada dos equipamentos para permitir que um miner
 - Carrinho: ocupa 1 espaco; adiciona 4 de capacidade de ouro; movimento custa 2 ticks.
 - Mochila: ocupa 1 espaco; adiciona 2 de capacidade de ouro; nao altera velocidade.
 
+O ambiente publica o percepto `cargo_space` enquanto o miner ainda tem capacidade livre. Esse percepto permite coleta oportunista: se o miner pisa em uma celula com ouro e ainda pode carregar mais, ele coleta imediatamente, inclusive quando estiver equipado com carrinho ou mochila.
+
 Equipamentos nunca ficam abandonados no mapa. Eles so podem estar equipados por um miner ou armazenados na base. Trocas sao aceitas apenas na celula do depot.
+
+A base/depot e tratada como uma celula compartilhada para entrada e deposito. Mais de um miner pode ocupar `(DX,DY)` ao mesmo tempo, evitando que um miner parado na base bloqueie a entrega dos demais.
 
 Distribuicao inicial:
 
