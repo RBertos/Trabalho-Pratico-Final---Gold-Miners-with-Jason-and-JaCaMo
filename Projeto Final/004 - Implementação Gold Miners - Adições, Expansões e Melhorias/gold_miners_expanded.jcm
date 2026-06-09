@@ -1,0 +1,28 @@
+/*
+    Expanded Gold Miners JaCaMo project.
+    This version is intentionally isolated from the original project files.
+*/
+
+mas gold_miners_expanded {
+    agent leader : leader_ext.asl
+
+    agent miner1 : miner_ext.asl {
+        focus: mining.m1view
+    }
+    agent miner2 : miner_ext.asl {
+        focus: mining.m2view
+    }
+    agent miner3 : miner_ext.asl {
+        focus: mining.m3view
+    }
+    agent miner4 : miner_ext.asl {
+        focus: mining.m4view
+    }
+
+    workspace mining {
+        artifact m1view: mining.expanded.ExpandedMiningPlanet(6,0)
+        artifact m2view: mining.expanded.ExpandedMiningPlanet(6,1)
+        artifact m3view: mining.expanded.ExpandedMiningPlanet(6,2)
+        artifact m4view: mining.expanded.ExpandedMiningPlanet(6,3)
+    }
+}
