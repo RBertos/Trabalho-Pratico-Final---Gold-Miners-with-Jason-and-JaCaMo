@@ -10,6 +10,7 @@ public final class Config {
 
     public static final int BASE_VIEW_RADIUS = 1;
     public static final int LANTERN_VIEW_RADIUS = 3;
+    public static final int BASE_SERVICE_RADIUS = 2;
 
     public static final int MOVE_COST = 1;
     public static final int CART_MOVE_COST = 2;

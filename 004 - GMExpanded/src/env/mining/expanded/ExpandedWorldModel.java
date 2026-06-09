@@ -1,14 +1,13 @@
 package mining.expanded;
 
-import jason.environment.grid.GridWorldModel;
-import jason.environment.grid.Location;
-
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import jason.environment.grid.GridWorldModel;
+import jason.environment.grid.Location;
 import mining.expanded.ExpandedMiningPlanet.Move;
 
 public class ExpandedWorldModel extends GridWorldModel {
@@ -233,7 +232,7 @@ public class ExpandedWorldModel extends GridWorldModel {
             return 0;
         }
         int dropped = inventory.dropAllGold();
-        if (l.equals(depot)) {
+        if (isInBaseRange(l)) {
             goldsInDepot += dropped;
             agents[ag].addDepositedGold(dropped);
             recordEvent(agents[ag].name() + " deposited " + dropped + " gold");
@@ -248,7 +247,7 @@ public class ExpandedWorldModel extends GridWorldModel {
 
     public synchronized boolean equip(int ag, EquipmentType type) {
         consumeTicks(Config.EQUIP_COST, agents[ag].name() + " equip " + type.atom());
-        if (!getAgPos(ag).equals(depot)) {
+        if (!isInBaseRange(getAgPos(ag))) {
             recordEvent(agents[ag].name() + " failed to equip outside depot");
             return false;
         }
@@ -264,7 +263,7 @@ public class ExpandedWorldModel extends GridWorldModel {
 
     public synchronized boolean unequip(int ag, EquipmentType type) {
         consumeTicks(Config.EQUIP_COST, agents[ag].name() + " unequip " + type.atom());
-        if (!getAgPos(ag).equals(depot)) {
+        if (!isInBaseRange(getAgPos(ag))) {
             recordEvent(agents[ag].name() + " failed to unequip outside depot");
             return false;
         }
@@ -312,6 +311,10 @@ public class ExpandedWorldModel extends GridWorldModel {
         return "lanterna=" + baseStock(EquipmentType.LANTERN)
                 + " carrinho=" + baseStock(EquipmentType.CART)
                 + " mochila=" + baseStock(EquipmentType.BACKPACK);
+    }
+
+    private boolean isInBaseRange(Location location) {
+        return location != null && depot != null && location.distance(depot) <= Config.BASE_SERVICE_RADIUS;
     }
 
     public synchronized String toString() {

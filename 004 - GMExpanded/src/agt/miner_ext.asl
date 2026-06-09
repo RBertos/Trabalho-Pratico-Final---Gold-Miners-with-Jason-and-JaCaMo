@@ -161,6 +161,8 @@ score(0).
 +mission_cancelled(X,Y,Reason)[source(A)]
   : true
  <- -claimed(X,Y);
+    -claiming(X,Y);
+    -engaged;
     -known_gold(X,Y);
     -sent_bid(X,Y);
     .abolish(bid_for(X,Y,_,_)).
@@ -186,7 +188,7 @@ score(0).
  <- comm_tick("gold_picked");
     .broadcast(tell,gold_picked(X,Y));
     ?depot(_,DX,DY);
-    !pos(DX,DY);
+    !reach_base_zone(DX,DY);
     ?cargo(C,_Cap);
     drop;
     ?score(S);
@@ -244,7 +246,19 @@ score(0).
 
 +!choose_gold
   : true
- <- -+free.
+ <- -engaged;
+    -+free.
+
++!reach_base_zone(DX,DY)
+  : pos(AgX,AgY) & jia_ext.dist(AgX,AgY,DX,DY,D) & not D > 2
+ <- true.
+
++!reach_base_zone(DX,DY)
+  : pos(AgX,AgY)
+ <- jia_ext.get_direction(AgX,AgY,DX,DY,Step);
+    -+last_dir(Step);
+    !step_or_stop(Step);
+    !reach_base_zone(DX,DY).
 
 /* Movement */
 
