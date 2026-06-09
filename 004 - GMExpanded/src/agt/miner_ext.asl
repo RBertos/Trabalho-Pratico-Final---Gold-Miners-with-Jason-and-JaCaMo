@@ -2,8 +2,8 @@
 // All miners share this program; specialization emerges from equipment assigned
 // in the Java environment.
 
-//Comando para rodar:
-// c:\Users\Bertos\Desktop\Mestrado\Sistemas Multi Agentes\git\Trabalho-Pratico-Final--Gold-Miners\003 - IGM" .\gradlew.bat -p "..\004 - GMExpanded" run
+// Run from terminal:
+// Set-Location "c:/Users/Bertos/Desktop/Mestrado/Sistemas Multi Agentes/git/Trabalho-Pratico-Final--Gold-Miners/003 - IGM"; ./gradlew.bat -p "../004 - GMExpanded" run
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 
@@ -60,9 +60,21 @@ score(0).
 
 /* Gold discovery and distributed allocation */
 
+@local_pickup[atomic]
++cell(X,Y,gold)
+  : pos(X,Y) & free & not engaged
+ <- +known_gold(X,Y);
+    +claiming(X,Y);
+    +claimed(X,Y);
+    +engaged;
+    -free;
+    mission("gold");
+    .print("Gold under me at (",X,",",Y,") - picking now.");
+    !handle(gold(X,Y)).
+
 @discover_gold[atomic]
 +cell(X,Y,gold)
-  : not known_gold(X,Y)
+  : not known_gold(X,Y) & not pos(X,Y)
  <- +known_gold(X,Y);
     .print("Gold perceived at (",X,",",Y,").");
     !announce_gold(X,Y);
@@ -201,6 +213,7 @@ score(0).
     !pos(DX,DY);
     ?cargo(C,_Cap);
     drop;
+    !vacate_depot;
     ?score(S);
     -+score(S+C);
     comm_tick("gold_deposited");
@@ -261,6 +274,17 @@ score(0).
 
 +!choose_gold
   : engaged
+ <- true.
+
++!vacate_depot
+  : pos(AgX,AgY) & depot(_,DX,DY) & AgX == DX & AgY == DY & gsize(_,W,H)
+ <- jia_ext.random(TX,W-1);
+    jia_ext.random(TY,H-1);
+    jia_ext.get_direction(AgX,AgY,TX,TY,Step);
+    !step_or_stop(Step).
+
++!vacate_depot
+  : true
  <- true.
 
 +!heartbeat
